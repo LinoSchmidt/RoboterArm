@@ -80,7 +80,7 @@ void loop(){
     servoHand.write(servoHandPos);
   }
 
-  Serial.println(String(offtime) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos));
+  Serial.println(String(offtime) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos)); //Tabellenausgabe
 
   delay(loopTime);
 }
