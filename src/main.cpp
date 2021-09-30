@@ -11,6 +11,18 @@
 #define poti3Pin 2
 #define poti4Pin 3
 
+#define DrehungMax 180
+#define DrehungMin 0
+
+#define ArmMax 130
+#define ArmMin 0
+
+#define OberarmMax 180
+#define OberarmMin 0
+
+#define HandMax 140
+#define HandMin 45
+
 #define loopTime 25
 #define PotiFehlerBereich 100
 #define AusschaltDelay 80
@@ -41,10 +53,10 @@ void loop()
   Poti3 = analogRead(poti3Pin);
   Poti4 = analogRead(poti4Pin);
 
-  servoDrehungPos = map(Poti1, 0, 1023, 0, 180);
-  servoArmPos = map(Poti2, 1023, 0, 0, 130);
-  servoOberarmPos = map(Poti3, 0, 1023, 0, 180);
-  servoHandPos = map(Poti4, 0, 1023, 45, 140);
+  servoDrehungPos = map(Poti1, 0, 1023, DrehungMin, DrehungMax);
+  servoArmPos = map(Poti2, 1023, 0, ArmMin, ArmMax);
+  servoOberarmPos = map(Poti3, 0, 1023, OberarmMin, OberarmMax);
+  servoHandPos = map(Poti4, 0, 1023, HandMin, HandMax);
 
   if (servoDrehungPos <= servoDrehungPosOLD + PotiFehlerBereich && servoDrehungPos >= servoDrehungPosOLD - PotiFehlerBereich && servoArmPos <= servoArmPosOLD + PotiFehlerBereich && servoArmPos >= servoArmPosOLD - PotiFehlerBereich && servoOberarmPos <= servoOberarmPosOLD + PotiFehlerBereich && servoOberarmPos >= servoOberarmPosOLD - PotiFehlerBereich && servoHandPos <= servoHandPosOLD + PotiFehlerBereich && servoHandPos >= servoHandPosOLD - PotiFehlerBereich)
   {
