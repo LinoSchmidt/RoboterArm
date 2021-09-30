@@ -26,6 +26,7 @@
 #define loopTime 25
 #define PotiFehlerBereich 100
 #define AusschaltDelay 80
+#define timeToAutoplay 4800 //2min
 
 Servo servoDrehung, servoArm, servoOberarm, servoHand;
 
@@ -60,7 +61,8 @@ void loop()
 
   if (servoDrehungPos <= servoDrehungPosOLD + PotiFehlerBereich && servoDrehungPos >= servoDrehungPosOLD - PotiFehlerBereich && servoArmPos <= servoArmPosOLD + PotiFehlerBereich && servoArmPos >= servoArmPosOLD - PotiFehlerBereich && servoOberarmPos <= servoOberarmPosOLD + PotiFehlerBereich && servoOberarmPos >= servoOberarmPosOLD - PotiFehlerBereich && servoHandPos <= servoHandPosOLD + PotiFehlerBereich && servoHandPos >= servoHandPosOLD - PotiFehlerBereich)
   {
-    offtime++;
+    if (timeToAutoplay < offtime)
+      offtime++;
   }
   else
   {
