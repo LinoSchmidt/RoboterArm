@@ -5,10 +5,12 @@
 #define servoArmPin 7
 #define servoOberarmPin 8
 #define servoHandPin 9
+
 #define poti1Pin 0
 #define poti2Pin 5
 #define poti3Pin 2
 #define poti4Pin 3
+
 #define loopTime 25
 #define PotiFehlerBereich 100
 #define AusschaltDelay 80
@@ -22,7 +24,8 @@ int offtime;
 
 bool disabled = false;
 
-void setup(){
+void setup()
+{
   servoDrehung.attach(servoDrehungPin);
   servoArm.attach(servoArmPin);
   servoOberarm.attach(servoOberarmPin);
@@ -31,7 +34,8 @@ void setup(){
   Serial.begin(9600);
 }
 
-void loop(){
+void loop()
+{
   Poti1 = analogRead(poti1Pin);
   Poti2 = analogRead(poti2Pin);
   Poti3 = analogRead(poti3Pin);
@@ -42,12 +46,15 @@ void loop(){
   servoOberarmPos = map(Poti3, 0, 1023, 0, 180);
   servoHandPos = map(Poti4, 0, 1023, 45, 140);
 
-  if(servoDrehungPos <= servoDrehungPosOLD + PotiFehlerBereich && servoDrehungPos >= servoDrehungPosOLD - PotiFehlerBereich && servoArmPos <= servoArmPosOLD + PotiFehlerBereich && servoArmPos >= servoArmPosOLD - PotiFehlerBereich && servoOberarmPos <= servoOberarmPosOLD + PotiFehlerBereich && servoOberarmPos >= servoOberarmPosOLD - PotiFehlerBereich && servoHandPos <= servoHandPosOLD + PotiFehlerBereich && servoHandPos >= servoHandPosOLD - PotiFehlerBereich){
-    if(offtime < AusschaltDelay){
+  if (servoDrehungPos <= servoDrehungPosOLD + PotiFehlerBereich && servoDrehungPos >= servoDrehungPosOLD - PotiFehlerBereich && servoArmPos <= servoArmPosOLD + PotiFehlerBereich && servoArmPos >= servoArmPosOLD - PotiFehlerBereich && servoOberarmPos <= servoOberarmPosOLD + PotiFehlerBereich && servoOberarmPos >= servoOberarmPosOLD - PotiFehlerBereich && servoHandPos <= servoHandPosOLD + PotiFehlerBereich && servoHandPos >= servoHandPosOLD - PotiFehlerBereich)
+  {
+    if (offtime < AusschaltDelay)
+    {
       offtime++;
     }
   }
-  else{
+  else
+  {
     offtime = 0;
 
     servoDrehungPosOLD = servoDrehungPos;
@@ -56,7 +63,8 @@ void loop(){
     servoHandPosOLD = servoHandPos;
   }
 
-  if(offtime >= AusschaltDelay){
+  if (offtime >= AusschaltDelay)
+  {
     servoDrehung.detach();
     servoArm.detach();
     servoOberarm.detach();
@@ -64,8 +72,10 @@ void loop(){
 
     disabled = true;
   }
-  else{
-    if (disabled){
+  else
+  {
+    if (disabled)
+    {
       servoDrehung.attach(servoDrehungPin);
       servoArm.attach(servoArmPin);
       servoOberarm.attach(servoOberarmPin);
