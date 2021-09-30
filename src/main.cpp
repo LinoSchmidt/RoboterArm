@@ -101,6 +101,11 @@ void loop()
     servoHand.write(servoHandPos);
   }
 
+  if (offtime >= timeToAutoplay)
+  {
+    //code für forstellung hier...
+  }
+
   Serial.println(String(offtime) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos));
 
   delay(loopTime);
