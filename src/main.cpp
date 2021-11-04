@@ -1,14 +1,14 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-#define servoDrehungPin 10
-#define servoArmPin 7
-#define servoOberarmPin 8
-#define servoHandPin 9
+#define servoDrehungPin 9
+#define servoArmPin 10
+#define servoOberarmPin 11
+#define servoHandPin 12
 
-#define poti1Pin 0
-#define poti2Pin 5
-#define poti3Pin 2
+#define poti1Pin 2
+#define poti2Pin 1
+#define poti3Pin 0
 #define poti4Pin 3
 
 #define DrehungMax 180
@@ -24,18 +24,22 @@
 #define HandMin 45
 
 #define loopTime 25
-#define PotiFehlerBereich 100
-#define AusschaltDelay 80
-#define timeToAutoplay 4800 //2min
+#define PotiFehlerBereich 2
+#define AusschaltDelay 40
+#define timeToAutoplay 4800
 
 Servo servoDrehung, servoArm, servoOberarm, servoHand;
 
 int Poti1, Poti2, Poti3, Poti4;
 int servoDrehungPos, servoArmPos, servoOberarmPos, servoHandPos;
-int servoDrehungPosOLD, servoArmPosOLD, servoOberarmPosOLD, servoHandPosOLD;
-int offtime;
+int servoDrehungPosOLD = 0, servoArmPosOLD = 0, servoOberarmPosOLD = 0, servoHandPosOLD = 0;
+int offtime = 0;
 
 bool disabled = false;
+
+void autoplay(){
+  //code für forstellung hier...
+}
 
 void setup()
 {
@@ -61,7 +65,7 @@ void loop()
 
   if (servoDrehungPos <= servoDrehungPosOLD + PotiFehlerBereich && servoDrehungPos >= servoDrehungPosOLD - PotiFehlerBereich && servoArmPos <= servoArmPosOLD + PotiFehlerBereich && servoArmPos >= servoArmPosOLD - PotiFehlerBereich && servoOberarmPos <= servoOberarmPosOLD + PotiFehlerBereich && servoOberarmPos >= servoOberarmPosOLD - PotiFehlerBereich && servoHandPos <= servoHandPosOLD + PotiFehlerBereich && servoHandPos >= servoHandPosOLD - PotiFehlerBereich)
   {
-    if (timeToAutoplay < offtime)
+    if (timeToAutoplay > offtime)
       offtime++;
   }
   else
@@ -76,12 +80,16 @@ void loop()
 
   if (offtime >= AusschaltDelay)
   {
-    servoDrehung.detach();
-    servoArm.detach();
-    servoOberarm.detach();
-    servoHand.detach();
+    if(offtime >= timeToAutoplay)
+      autoplay();
+    else{
+      servoDrehung.detach();
+      servoArm.detach();
+      servoOberarm.detach();
+      servoHand.detach();
 
-    disabled = true;
+      disabled = true;
+    }
   }
   else
   {
@@ -101,12 +109,7 @@ void loop()
     servoHand.write(servoHandPos);
   }
 
-  if (offtime >= timeToAutoplay)
-  {
-    //code für forstellung hier...
-  }
-
-  Serial.println(String(offtime) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos));
+  Serial.println(String(offtime / 10) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos));
 
   delay(loopTime);
 }
