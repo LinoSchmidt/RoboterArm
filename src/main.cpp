@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <Servo.h>
 
+#define Debug true //----------------------------------Ausschalten Wichtig!---------------------------------------
+
 #define servoDrehungPin 9
 #define servoArmPin 10
 #define servoOberarmPin 11
@@ -48,7 +50,7 @@ void setup()
   servoOberarm.attach(servoOberarmPin);
   servoHand.attach(servoHandPin);
 
-  Serial.begin(9600);
+  if(Debug)Serial.begin(9600);
 }
 
 void loop()
@@ -109,7 +111,7 @@ void loop()
     servoHand.write(servoHandPos);
   }
 
-  Serial.println(String(offtime / 10) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos));
+  if(Debug)Serial.println(String(offtime / 10) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos));
 
   delay(loopTime);
 }
