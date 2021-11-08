@@ -28,7 +28,7 @@
 #define loopTime 25
 #define PotiFehlerBereich 2
 #define AusschaltDelay 40
-#define timeToAutoplay 4800
+#define timeToAutoplay 500
 
 Servo servoDrehung, servoArm, servoOberarm, servoHand;
 
@@ -111,7 +111,7 @@ void loop()
     servoHand.write(servoHandPos);
   }
 
-  if(Debug)Serial.println(String(offtime / 10) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos));
+  if(Debug)Serial.println(String(offtime) + "," + String(servoDrehungPos) + "," + String(servoArmPos) + "," + String(servoOberarmPos) + "," + String(servoHandPos));
 
   delay(loopTime);
 }
