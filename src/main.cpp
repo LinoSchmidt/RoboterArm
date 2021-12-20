@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-#define Debug true //----------------------------------Ausschalten Wichtig!---------------------------------------
+#define Debug true /*----------------------------------Ausschalten Wichtig!---------------------------------------*/
 
 #define servoDrehungPin 9
 #define servoArmPin 10
@@ -69,6 +69,7 @@ void loop()
   {
     if (timeToAutoplay > offtime)
       offtime++;
+      
   }
   else
   {
