@@ -16,7 +16,7 @@
 #define DrehungMax 180
 #define DrehungMin 0
 
-#define ArmMax 130
+#define ArmMax 180
 #define ArmMin 0
 
 #define OberarmMax 180
