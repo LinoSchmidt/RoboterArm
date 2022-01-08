@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-#define Debug true /*----------------------------------Ausschalten Wichtig!---------------------------------------*/
+#define Debug true /*----------------------------------Ausschalten Wichtig! (Nur für testzwecke)---------------------------------------*/
 
 #define servoDrehungPin 9
 #define servoArmPin 10
@@ -13,7 +13,7 @@
 #define poti3Pin 0
 #define poti4Pin 3
 
-#define DrehungMax 180
+#define DrehungMax 145
 #define DrehungMin 0
 
 #define ArmMax 180
