@@ -2,8 +2,6 @@
 #include <Servo.h>
 
 
-#define Debug true //----------------------------------Ausschalten Wichtig! (Nur für testzwecke)---------------------------------------
-
 //------------------------------------------------------------------
 //--------------------------> Einstellungen <-----------------------
 //------------------------------------------------------------------
@@ -30,11 +28,11 @@
 #define Oberarm_Start 111
 #define Hand_Start 0
 
-
 #define joystick_LX_Pin 0
 #define joystick_LY_Pin 1
 #define joystick_RX_Pin 2
 #define joystick_RY_Pin 3
+#define joystick_button_Pin 8
 
 #define joystick_LX_middle 511
 #define joystick_LY_middle 511
@@ -49,13 +47,13 @@
 #define joystick_MinSpeed 1
 
 #define LoopTime 25
-
 #define TimeToAutoplay 500
 #define TimeToDetach 80
 
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 //------------------------------------------------------------------
+
 
 Servo Drehung, Arm, Oberarm, Hand;
 
@@ -65,8 +63,60 @@ int DrehungPos = Drehung_Start, ArmPos = Arm_Start, OberarmPos = Oberarm_Start, 
 int offtime = 0;
 bool detached = true;
 
+
 void setup(){
-  if(Debug)Serial.begin(9600);
+  Serial.begin(9600);
+
+  pinMode(joystick_button_Pin, INPUT_PULLUP);
+}
+
+void joystickButtonPress(){
+  int Code[5] = {0 ,0 ,0 ,0 ,0}; //0 = short, 1 = long
+  int CodeLenght = 0;
+  bool Finished = false;
+  bool abort = false;
+
+  while(!Finished && !abort){
+    if(CodeLenght > 5)abort = true;
+
+    int buttonTime = 0;
+    while(digitalRead(joystick_button_Pin) == HIGH){
+      buttonTime+= 10;
+      delay(10);
+    }
+
+    if(buttonTime < 250){
+      Code[CodeLenght] = 0;
+      Serial.println("short press");
+    }
+    else if(buttonTime < 1000){
+      Code[CodeLenght] = 1;
+      Serial.println("long press");
+    }
+    else{
+      abort = true;
+      Serial.println("Code aborted!");
+    }
+    
+    CodeLenght++;
+
+    buttonTime = 0;
+    while(digitalRead(joystick_button_Pin) == LOW && !Finished && !abort){
+      buttonTime+= 10;
+      delay(10);
+
+      if(buttonTime >= 1000){
+        Finished = true;
+        Serial.println("Code fineshed!");
+      }
+    }
+  }
+
+  if(!abort){
+    if(Code ==  && CodeLenght == 1){
+
+    }
+  }
 }
 
 int joystick_position(int joystick, int joystick_middle, int joystick_min, int joystick_max){
@@ -134,7 +184,9 @@ void loop(){
     detached = true;
   }
 
-  if(Debug)Serial.println(String(offtime) + "," + String(DrehungPos) + "," + String(ArmPos) + "," + String(OberarmPos) + "," + String(HandPos));
+  if(digitalRead(joystick_button_Pin) == HIGH)joystickButtonPress();
+
+  Serial.println(String(offtime) + "," + String(DrehungPos) + "," + String(ArmPos) + "," + String(OberarmPos) + "," + String(HandPos));
 
   delay(LoopTime);
 }
