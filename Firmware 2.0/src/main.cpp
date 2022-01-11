@@ -113,7 +113,7 @@ void joystickButtonPress(){
   }
 
   if(!abort){
-    if(Code ==  && CodeLenght == 1){
+    if(Code == {0, 1, 0, 1, 0} && CodeLenght == 6){
 
     }
   }
