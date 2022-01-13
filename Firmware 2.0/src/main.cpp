@@ -1,11 +1,13 @@
 #include <Arduino.h>
 #include <Servo.h>
+#include <EEPROM.h>
 
 
 //------------------------------------------------------------------
 //--------------------------> Einstellungen <-----------------------
 //------------------------------------------------------------------
 
+//Servos
 #define DrehungPin 9
 #define ArmPin 10
 #define OberarmPin 11
@@ -28,6 +30,7 @@
 #define Oberarm_Start 111
 #define Hand_Start 0
 
+//Joysticks
 #define joystick_LX_Pin 0
 #define joystick_LY_Pin 1
 #define joystick_RX_Pin 2
@@ -46,9 +49,17 @@
 #define joystick_MaxSpeed 10
 #define joystick_MinSpeed 1
 
+//Timing
 #define LoopTime 25
 #define TimeToAutoplay 500
 #define TimeToDetach 80
+#define Calibration_TimeToMiddle 3000
+
+//Buzzer
+#define BuzzerPin 8
+#define Buzzer_CalibrationHGIH 2
+#define Buzzer_CalibrationLOW 1
+#define Buzzer_ShortTon 1
 
 //------------------------------------------------------------------
 //------------------------------------------------------------------
@@ -68,6 +79,17 @@ void setup(){
   Serial.begin(9600);
 
   pinMode(joystick_button_Pin, INPUT_PULLUP);
+
+  
+}
+
+void calibrate(){
+  tone(BuzzerPin, Buzzer_CalibrationHGIH);
+  for(int loT = Buzzer_CalibrationHGIH; loT > Buzzer_CalibrationLOW; loT--){
+    tone(BuzzerPin, loT);
+    delay(Calibration_TimeToMiddle / (Buzzer_CalibrationHGIH - Buzzer_CalibrationLOW));
+  }
+
 }
 
 void joystickButtonPress(){
@@ -118,6 +140,7 @@ void joystickButtonPress(){
     Serial.println(String(Code[0]) + String(Code[1]) + String(Code[2]) + String(Code[3]) + String(Code[4]) + " Len:" + String(CodeLenght));
     if(Code[0] == 0 && Code[1] == 1 && Code[2] == 0 && Code[3] == 1 && Code[4] == 0  && CodeLenght == 4){
       Serial.println("Calibrate...");
+      calibrate();
     }
   }
 }
