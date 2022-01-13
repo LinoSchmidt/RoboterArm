@@ -71,21 +71,23 @@ void setup(){
 }
 
 void joystickButtonPress(){
-  int Code[5] = {0 ,0 ,0 ,0 ,0}; //0 = short, 1 = long
+  int Code[30] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //0 = short, 1 = long
   int CodeLenght = 0;
   bool Finished = false;
   bool abort = false;
 
   while(!Finished && !abort){
-    if(CodeLenght > 5)abort = true;
-
+    if(CodeLenght > 29){
+      abort = true;
+      Serial.println("Code aborted!");
+    }
     int buttonTime = 0;
-    while(digitalRead(joystick_button_Pin) == HIGH){
+    while(digitalRead(joystick_button_Pin) == LOW){
       buttonTime+= 10;
       delay(10);
     }
 
-    if(buttonTime < 250){
+    if(buttonTime < 300){
       Code[CodeLenght] = 0;
       Serial.println("short press");
     }
@@ -101,7 +103,7 @@ void joystickButtonPress(){
     CodeLenght++;
 
     buttonTime = 0;
-    while(digitalRead(joystick_button_Pin) == LOW && !Finished && !abort){
+    while(digitalRead(joystick_button_Pin) == HIGH && !Finished && !abort){
       buttonTime+= 10;
       delay(10);
 
@@ -113,8 +115,9 @@ void joystickButtonPress(){
   }
 
   if(!abort){
-    if(Code == {0, 1, 0, 1, 0} && CodeLenght == 6){
-
+    Serial.println(String(Code[0]) + String(Code[1]) + String(Code[2]) + String(Code[3]) + String(Code[4]) + " Len:" + String(CodeLenght));
+    if(Code[0] == 0 && Code[1] == 1 && Code[2] == 0 && Code[3] == 1 && Code[4] == 0  && CodeLenght == 4){
+      Serial.println("Calibrate...");
     }
   }
 }
