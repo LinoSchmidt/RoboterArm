@@ -37,14 +37,6 @@
 #define joystick_RY_Pin 3
 #define joystick_button_Pin 8
 
-#define joystick_LX_middle 511
-#define joystick_LY_middle 511
-#define joystick_RX_middle 511
-#define joystick_RY_middle 511
-
-#define joystickMax 1023
-#define joystickMin 0
-
 #define joystick_Empfindlichkeit 2
 #define joystick_MaxSpeed 10
 #define joystick_MinSpeed 1
@@ -60,6 +52,22 @@
 #define Buzzer_CalibrationHGIH 2
 #define Buzzer_CalibrationLOW 1
 #define Buzzer_ShortTon 1
+#define Buzzer_ShortTone_Time 50
+
+//EEPROM
+#define EEPROM_Code 6182032
+#define EEPROM_joystick_LX_middle 1
+#define EEPROM_joystick_LY_middle 2
+#define EEPROM_joystick_RX_middle 3
+#define EEPROM_joystick_RY_middle 4
+#define EEPROM_joystick_LX_max 5
+#define EEPROM_joystick_LY_max 6
+#define EEPROM_joystick_RX_max 7
+#define EEPROM_joystick_RY_max 8
+#define EEPROM_joystick_LX_min 9
+#define EEPROM_joystick_LY_min 10
+#define EEPROM_joystick_RX_min 11
+#define EEPROM_joystick_RY_min 12
 
 //------------------------------------------------------------------
 //------------------------------------------------------------------
@@ -69,19 +77,15 @@
 Servo Drehung, Arm, Oberarm, Hand;
 
 int joystick_LX, joystick_LY, joystick_RX, joystick_RY;
+int joystick_LX_middle, joystick_LY_middle, joystick_RX_middle, joystick_RY_middle;
+int joystick_LX_max, joystick_LY_max, joystick_RX_max, joystick_RY_max;
+int joystick_LX_min, joystick_LY_min, joystick_RX_min, joystick_RY_min;
 int DrehungPos = Drehung_Start, ArmPos = Arm_Start, OberarmPos = Oberarm_Start, HandPos = Hand_Start;
 
 int offtime = 0;
 bool detached = true;
+int eeprom;
 
-
-void setup(){
-  Serial.begin(9600);
-
-  pinMode(joystick_button_Pin, INPUT_PULLUP);
-
-  
-}
 
 void calibrate(){
   tone(BuzzerPin, Buzzer_CalibrationHGIH);
@@ -90,6 +94,137 @@ void calibrate(){
     delay(Calibration_TimeToMiddle / (Buzzer_CalibrationHGIH - Buzzer_CalibrationLOW));
   }
 
+  int joystick_LX_middle_r1 = analogRead(joystick_LX_Pin);
+  delay(1);
+  int joystick_LX_middle_r2 = analogRead(joystick_LX_Pin);
+  delay(1);
+  int joystick_LX_middle_r3 = analogRead(joystick_LX_Pin);
+  delay(1);
+  int joystick_LX_middle_r4 = analogRead(joystick_LX_Pin);
+  delay(1);
+  int joystick_LX_middle_r5 = analogRead(joystick_LX_Pin);
+  int joystick_LX_middle_av = (joystick_LX_middle_r1 + joystick_LX_middle_r2 + joystick_LX_middle_r3 + joystick_LX_middle_r4 + joystick_LX_middle_r5) / 5;
+
+  int joystick_LY_middle_r1 = analogRead(joystick_LY_Pin);
+  delay(1);
+  int joystick_LY_middle_r2 = analogRead(joystick_LY_Pin);
+  delay(1);
+  int joystick_LY_middle_r3 = analogRead(joystick_LY_Pin);
+  delay(1);
+  int joystick_LY_middle_r4 = analogRead(joystick_LY_Pin);
+  delay(1);
+  int joystick_LY_middle_r5 = analogRead(joystick_LY_Pin);
+  int joystick_LY_middle_av = (joystick_LY_middle_r1 + joystick_LY_middle_r2 + joystick_LY_middle_r3 + joystick_LY_middle_r4 + joystick_LY_middle_r5) / 5;
+
+  int joystick_RX_middle_r1 = analogRead(joystick_RX_Pin);
+  delay(1);
+  int joystick_RX_middle_r2 = analogRead(joystick_RX_Pin);
+  delay(1);
+  int joystick_RX_middle_r3 = analogRead(joystick_RX_Pin);
+  delay(1);
+  int joystick_RX_middle_r4 = analogRead(joystick_RX_Pin);
+  delay(1);
+  int joystick_RX_middle_r5 = analogRead(joystick_RX_Pin);
+  int joystick_RX_middle_av = (joystick_RX_middle_r1 + joystick_RX_middle_r2 + joystick_RX_middle_r3 + joystick_RX_middle_r4 + joystick_RX_middle_r5) / 5;
+
+  int joystick_RY_middle_r1 = analogRead(joystick_RY_Pin);
+  delay(1);
+  int joystick_RY_middle_r2 = analogRead(joystick_RY_Pin);
+  delay(1);
+  int joystick_RY_middle_r3 = analogRead(joystick_RY_Pin);
+  delay(1);
+  int joystick_RY_middle_r4 = analogRead(joystick_RY_Pin);
+  delay(1);
+  int joystick_RY_middle_r5 = analogRead(joystick_RY_Pin);
+  int joystick_RY_middle_av = (joystick_RY_middle_r1 + joystick_RY_middle_r2 + joystick_RY_middle_r3 + joystick_RY_middle_r4 + joystick_RY_middle_r5) / 5;
+
+  EEPROM.put(EEPROM_joystick_LX_middle, joystick_LX_middle_av);
+  EEPROM.put(EEPROM_joystick_LY_middle, joystick_LY_middle_av);
+  EEPROM.put(EEPROM_joystick_RX_middle, joystick_RX_middle_av);
+  EEPROM.put(EEPROM_joystick_RY_middle, joystick_RY_middle_av);
+  joystick_LX_middle = joystick_LX_middle_av;
+  joystick_LY_middle = joystick_LY_middle_av;
+  joystick_RX_middle = joystick_RX_middle_av;
+  joystick_RY_middle = joystick_RY_middle_av;
+  
+  tone(BuzzerPin, Buzzer_ShortTon);
+  delay(Buzzer_ShortTone_Time);
+  noTone(BuzzerPin);
+
+  joystick_LX_max = joystick_LX_middle_av;
+  joystick_LY_max = joystick_LY_middle_av;
+  joystick_RX_max = joystick_RX_middle_av;
+  joystick_RY_max = joystick_RY_middle_av;
+  joystick_LX_min = joystick_LX_middle_av;
+  joystick_LY_min = joystick_LY_middle_av;
+  joystick_RX_min = joystick_RX_middle_av;
+  joystick_RY_min = joystick_RY_middle_av;
+
+  while(digitalRead(joystick_button_Pin) == HIGH){
+    int joystick_LX_rout = analogRead(joystick_LX_Pin);
+    int joystick_LY_rout = analogRead(joystick_LY_Pin);
+    int joystick_RX_rout = analogRead(joystick_RX_Pin);
+    int joystick_RY_rout = analogRead(joystick_RY_Pin);
+
+    if(joystick_LX_rout > joystick_LX_max)joystick_LX_max = joystick_LX_rout;
+    if(joystick_LY_rout > joystick_LY_max)joystick_LY_max = joystick_LY_rout;
+    if(joystick_RX_rout > joystick_RX_max)joystick_RX_max = joystick_RX_rout;
+    if(joystick_RY_rout > joystick_RY_max)joystick_RY_max = joystick_RY_rout;
+    if(joystick_LX_rout < joystick_LX_min)joystick_LX_min = joystick_LX_rout;
+    if(joystick_LY_rout < joystick_LY_min)joystick_LY_min = joystick_LY_rout;
+    if(joystick_RX_rout < joystick_RX_min)joystick_RX_min = joystick_RX_rout;
+    if(joystick_RY_rout < joystick_RY_min)joystick_RY_min = joystick_RY_rout;
+
+    delay(1);
+  }
+
+  EEPROM.put(EEPROM_joystick_LX_max, joystick_LX_max);
+  EEPROM.put(EEPROM_joystick_LY_max, joystick_LY_max);
+  EEPROM.put(EEPROM_joystick_RX_max, joystick_RX_max);
+  EEPROM.put(EEPROM_joystick_RY_max, joystick_RY_max);
+  EEPROM.put(EEPROM_joystick_LX_min, joystick_LX_min);
+  EEPROM.put(EEPROM_joystick_LY_min, joystick_LY_min);
+  EEPROM.put(EEPROM_joystick_RX_min, joystick_RX_min);
+  EEPROM.put(EEPROM_joystick_RY_min, joystick_RY_min);
+
+  tone(BuzzerPin, Buzzer_ShortTon);
+  delay(Buzzer_ShortTone_Time);
+  noTone(BuzzerPin);
+  delay(25);
+  tone(BuzzerPin, Buzzer_ShortTon);
+  delay(Buzzer_ShortTone_Time);
+  noTone(BuzzerPin);
+}
+
+void setup(){
+  Serial.begin(9600);
+
+  pinMode(joystick_button_Pin, INPUT_PULLUP);
+
+  EEPROM.get(0, eeprom);
+  if(eeprom != EEPROM_Code){
+    for (unsigned int i = 0 ; i < EEPROM.length() ; i++) {
+      EEPROM.put(i, 0);
+    }
+
+    EEPROM.put(0, EEPROM_Code);
+    calibrate();
+  }
+  else{
+    EEPROM.get(EEPROM_joystick_LX_middle, joystick_LX_middle);
+    EEPROM.get(EEPROM_joystick_LY_middle, joystick_LY_middle);
+    EEPROM.get(EEPROM_joystick_RX_middle, joystick_RX_middle);
+    EEPROM.get(EEPROM_joystick_RY_middle, joystick_RY_middle);
+
+    EEPROM.get(EEPROM_joystick_LX_max, joystick_LX_max);
+    EEPROM.get(EEPROM_joystick_LY_max, joystick_LY_max);
+    EEPROM.get(EEPROM_joystick_RX_max, joystick_RX_max);
+    EEPROM.get(EEPROM_joystick_RY_max, joystick_RY_max);
+    EEPROM.get(EEPROM_joystick_LX_min, joystick_LX_min);
+    EEPROM.get(EEPROM_joystick_LY_min, joystick_LY_min);
+    EEPROM.get(EEPROM_joystick_RX_min, joystick_RX_min);
+    EEPROM.get(EEPROM_joystick_RY_min, joystick_RY_min);
+  }
 }
 
 void joystickButtonPress(){
@@ -155,10 +290,10 @@ int joystick_position(int joystick, int joystick_middle, int joystick_min, int j
 }
 
 void loop(){
-  joystick_LX = joystick_position(analogRead(HandPin), joystick_LX_middle, joystickMin, joystickMin);
-  joystick_LY = joystick_position(analogRead(OberarmPin), joystick_LY_middle, joystickMin, joystickMin);
-  joystick_RX = joystick_position(analogRead(DrehungPin), joystick_RX_middle, joystickMin, joystickMin);
-  joystick_RY = joystick_position(analogRead(ArmPin), joystick_RY_middle, joystickMin, joystickMin);
+  joystick_LX = joystick_position(analogRead(joystick_LX_Pin), joystick_LX_middle, joystick_LX_min, joystick_LX_max);
+  joystick_LY = joystick_position(analogRead(joystick_LY_Pin), joystick_LY_middle, joystick_LY_min, joystick_LY_max);
+  joystick_RX = joystick_position(analogRead(joystick_RX_Pin), joystick_RX_middle, joystick_RX_min, joystick_RX_max);
+  joystick_RY = joystick_position(analogRead(joystick_RY_Pin), joystick_RY_middle, joystick_RY_min, joystick_RY_max);
 
   if(joystick_LX == 0 && joystick_LY == 0 && joystick_RX == 0 && joystick_RY == 0){
     if (TimeToAutoplay > offtime)
