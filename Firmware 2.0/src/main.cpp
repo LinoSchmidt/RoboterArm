@@ -47,6 +47,7 @@
 #define TimeToDetach 80
 #define Calibration_TimeToMiddle 3000
 #define Calibration_messureTime 5
+#define Calibration_messureCount 10
 
 //Buzzer
 #define BuzzerPin 7
@@ -97,55 +98,39 @@ void calibrate(){
 
   Serial.print("Get Middle Positions: ");
 
-  int joystick_LX_middle_r1 = analogRead(joystick_LX_Pin);
-  delay(Calibration_messureTime);
-  int joystick_LX_middle_r2 = analogRead(joystick_LX_Pin);
-  delay(Calibration_messureTime);
-  int joystick_LX_middle_r3 = analogRead(joystick_LX_Pin);
-  delay(Calibration_messureTime);
-  int joystick_LX_middle_r4 = analogRead(joystick_LX_Pin);
-  delay(Calibration_messureTime);
-  int joystick_LX_middle_r5 = analogRead(joystick_LX_Pin);
-  int joystick_LX_middle_av = (joystick_LX_middle_r1 + joystick_LX_middle_r2 + joystick_LX_middle_r3 + joystick_LX_middle_r4 + joystick_LX_middle_r5) / 5;
+  int joystick_LX_middle_av = 0;
+  for(int i = Calibration_messureCount; i > 0; i--){
+    joystick_LX_middle_av += analogRead(joystick_LX_Pin);
+    delay(Calibration_messureTime);
+  }
+  joystick_LX_middle_av = joystick_LX_middle_av / Calibration_messureCount;
 
   Serial.print("LX:" + String(joystick_LX_middle_av));
 
-  int joystick_LY_middle_r1 = analogRead(joystick_LY_Pin);
-  delay(Calibration_messureTime);
-  int joystick_LY_middle_r2 = analogRead(joystick_LY_Pin);
-  delay(Calibration_messureTime);
-  int joystick_LY_middle_r3 = analogRead(joystick_LY_Pin);
-  delay(Calibration_messureTime);
-  int joystick_LY_middle_r4 = analogRead(joystick_LY_Pin);
-  delay(Calibration_messureTime);
-  int joystick_LY_middle_r5 = analogRead(joystick_LY_Pin);
-  int joystick_LY_middle_av = (joystick_LY_middle_r1 + joystick_LY_middle_r2 + joystick_LY_middle_r3 + joystick_LY_middle_r4 + joystick_LY_middle_r5) / 5;
+  int joystick_LY_middle_av = 0;
+  for(int i = Calibration_messureCount; i > 0; i--){
+    joystick_LY_middle_av += analogRead(joystick_LY_Pin);
+    delay(Calibration_messureTime);
+  }
+  joystick_LY_middle_av = joystick_LY_middle_av / Calibration_messureCount;
 
   Serial.print(" LY:" + String(joystick_LY_middle_av));
 
-  int joystick_RX_middle_r1 = analogRead(joystick_RX_Pin);
-  delay(Calibration_messureTime);
-  int joystick_RX_middle_r2 = analogRead(joystick_RX_Pin);
-  delay(Calibration_messureTime);
-  int joystick_RX_middle_r3 = analogRead(joystick_RX_Pin);
-  delay(Calibration_messureTime);
-  int joystick_RX_middle_r4 = analogRead(joystick_RX_Pin);
-  delay(Calibration_messureTime);
-  int joystick_RX_middle_r5 = analogRead(joystick_RX_Pin);
-  int joystick_RX_middle_av = (joystick_RX_middle_r1 + joystick_RX_middle_r2 + joystick_RX_middle_r3 + joystick_RX_middle_r4 + joystick_RX_middle_r5) / 5;
+  int joystick_RX_middle_av = 0;
+  for(int i = Calibration_messureCount; i > 0; i--){
+    joystick_RX_middle_av += analogRead(joystick_RX_Pin);
+    delay(Calibration_messureTime);
+  }
+  joystick_RX_middle_av = joystick_RX_middle_av / Calibration_messureCount;
 
   Serial.print(" RX:" + String(joystick_RX_middle_av));
 
-  int joystick_RY_middle_r1 = analogRead(joystick_RY_Pin);
-  delay(Calibration_messureTime);
-  int joystick_RY_middle_r2 = analogRead(joystick_RY_Pin);
-  delay(Calibration_messureTime);
-  int joystick_RY_middle_r3 = analogRead(joystick_RY_Pin);
-  delay(Calibration_messureTime);
-  int joystick_RY_middle_r4 = analogRead(joystick_RY_Pin);
-  delay(Calibration_messureTime);
-  int joystick_RY_middle_r5 = analogRead(joystick_RY_Pin);
-  int joystick_RY_middle_av = (joystick_RY_middle_r1 + joystick_RY_middle_r2 + joystick_RY_middle_r3 + joystick_RY_middle_r4 + joystick_RY_middle_r5) / 5;
+  int joystick_RY_middle_av = 0;
+  for(int i = Calibration_messureCount; i > 0; i--){
+    joystick_RY_middle_av += analogRead(joystick_RY_Pin);
+    delay(Calibration_messureTime);
+  }
+  joystick_RY_middle_av = joystick_RY_middle_av / Calibration_messureCount;
 
   Serial.println(" RY:" + String(joystick_RY_middle_av));
 
