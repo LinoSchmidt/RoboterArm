@@ -345,14 +345,14 @@ void loop(){
     
     
     if(HandPos > HandMax)HandPos = HandMax;
-    if(OberarmPos > OberarmMax)HandPos = OberarmMax;
-    if(DrehungPos > DrehungMax)HandPos = DrehungMax;
-    if(ArmPos > ArmMax)HandPos = ArmMax;
+    if(OberarmPos > OberarmMax)OberarmPos = OberarmMax;
+    if(DrehungPos > DrehungMax)DrehungPos = DrehungMax;
+    if(ArmPos > ArmMax)ArmPos = ArmMax;
 
     if(HandPos < HandMin)HandPos = HandMin;
-    if(OberarmPos < OberarmMin)HandPos = OberarmMin;
-    if(DrehungPos < DrehungMin)HandPos = DrehungMin;
-    if(ArmPos < ArmMin)HandPos = ArmMin;
+    if(OberarmPos < OberarmMin)OberarmPos = OberarmMin;
+    if(DrehungPos < DrehungMin)DrehungPos = DrehungMin;
+    if(ArmPos < ArmMin)ArmPos = ArmMin;
 
     Drehung.write(DrehungPos);
     Arm.write(ArmPos);
