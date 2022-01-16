@@ -25,6 +25,11 @@
 #define HandMax 130
 #define HandMin 45
 
+#define InvertDrehung false
+#define InvertArm false
+#define InvertOberarm true
+#define InvertHand false
+
 #define Drehung_Start 135
 #define Arm_Start 180
 #define Oberarm_Start 111
@@ -48,6 +53,8 @@
 #define Calibration_TimeToMiddle 3000
 #define Calibration_messureTime 5
 #define Calibration_messureCount 10
+#define Button_LongPressTime 1000
+#define Button_ShortPressTime 300
 
 //Buzzer
 #define BuzzerPin 7
@@ -253,11 +260,11 @@ void joystickButtonPress(){
       delay(10);
     }
 
-    if(buttonTime < 300){
+    if(buttonTime < Button_ShortPressTime){
       Code[CodeLenght] = 0;
       Serial.println("short press");
     }
-    else if(buttonTime < 1000){
+    else if(buttonTime < Button_LongPressTime){
       Code[CodeLenght] = 1;
       Serial.println("long press");
     }
@@ -273,7 +280,7 @@ void joystickButtonPress(){
       buttonTime+= 10;
       delay(10);
 
-      if(buttonTime >= 1000){
+      if(buttonTime >= Button_LongPressTime){
         Finished = true;
         Serial.println("Code fineshed!");
       }
@@ -319,14 +326,22 @@ void loop(){
       detached = false;
     }
 
-    if(joystick_LX != 0)
-      HandPos += joystick_LX;
-    if(joystick_LY != 0)
-      OberarmPos += joystick_LY;
-    if(joystick_RX != 0)
-      DrehungPos += joystick_RX;
-    if(joystick_RY != 0)
-      ArmPos += joystick_RY;
+    if(joystick_LX != 0){
+      if(InvertHand)HandPos -= joystick_LX;
+      else HandPos += joystick_LX;
+    }
+    if(joystick_LY != 0){
+      if(InvertOberarm)OberarmPos -= joystick_LY;
+      else OberarmPos += joystick_LY;
+    }
+    if(joystick_RX != 0){
+      if(InvertDrehung)DrehungPos -= joystick_RX;
+      else DrehungPos += joystick_RX;
+    }
+    if(joystick_RY != 0){
+      if(InvertArm)ArmPos -= joystick_RY;
+      else ArmPos += joystick_RY;
+    }
     
     
     if(HandPos > HandMax)HandPos = HandMax;
