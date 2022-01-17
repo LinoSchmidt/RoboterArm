@@ -64,11 +64,7 @@
 #define Buzzer_ShortTone_Time 50
 
 //EEPROM
-#define EEPROM_Code 6182 //index 0
-#define EEPROM_joystick_LX_middle 20
-#define EEPROM_joystick_LY_middle 40
-#define EEPROM_joystick_RX_middle 60
-#define EEPROM_joystick_RY_middle 80
+#define EEPROM_Code 6183 //index 0
 #define EEPROM_joystick_LX_max 100
 #define EEPROM_joystick_LY_max 120
 #define EEPROM_joystick_RX_max 140
@@ -96,61 +92,56 @@ bool detached = true;
 int eeprom = 0;
 
 
-void calibrate(){
+void calibrateMiddle(){
+  Serial.print("Get Middle Positions: ");
+
+  joystick_LX_middle = 0;
+  for(int i = Calibration_messureCount; i > 0; i--){
+    joystick_LX_middle += analogRead(joystick_LX_Pin);
+    delay(Calibration_messureTime);
+  }
+  joystick_LX_middle = joystick_LX_middle / Calibration_messureCount;
+
+  Serial.print("LX:" + String(joystick_LX_middle));
+
+  joystick_LY_middle = 0;
+  for(int i = Calibration_messureCount; i > 0; i--){
+    joystick_LY_middle += analogRead(joystick_LY_Pin);
+    delay(Calibration_messureTime);
+  }
+  joystick_LY_middle = joystick_LY_middle / Calibration_messureCount;
+
+  Serial.print(" LY:" + String(joystick_LY_middle));
+
+  joystick_RX_middle = 0;
+  for(int i = Calibration_messureCount; i > 0; i--){
+    joystick_RX_middle += analogRead(joystick_RX_Pin);
+    delay(Calibration_messureTime);
+  }
+  joystick_RX_middle = joystick_RX_middle / Calibration_messureCount;
+
+  Serial.print(" RX:" + String(joystick_RX_middle));
+
+  joystick_RY_middle = 0;
+  for(int i = Calibration_messureCount; i > 0; i--){
+    joystick_RY_middle += analogRead(joystick_RY_Pin);
+    delay(Calibration_messureTime);
+  }
+  joystick_RY_middle = joystick_RY_middle / Calibration_messureCount;
+
+  Serial.println(" RY:" + String(joystick_RY_middle));
+
+  Serial.println("Saved");
+}
+
+void calibrateMaxMin(){
   tone(BuzzerPin, Buzzer_CalibrationHGIH);
   for(int loT = Buzzer_CalibrationHGIH; loT > Buzzer_CalibrationLOW; loT--){
     tone(BuzzerPin, loT);
     delay(Calibration_TimeToMiddle / (Buzzer_CalibrationHGIH - Buzzer_CalibrationLOW));
   }
 
-  Serial.print("Get Middle Positions: ");
-
-  int joystick_LX_middle_av = 0;
-  for(int i = Calibration_messureCount; i > 0; i--){
-    joystick_LX_middle_av += analogRead(joystick_LX_Pin);
-    delay(Calibration_messureTime);
-  }
-  joystick_LX_middle_av = joystick_LX_middle_av / Calibration_messureCount;
-
-  Serial.print("LX:" + String(joystick_LX_middle_av));
-
-  int joystick_LY_middle_av = 0;
-  for(int i = Calibration_messureCount; i > 0; i--){
-    joystick_LY_middle_av += analogRead(joystick_LY_Pin);
-    delay(Calibration_messureTime);
-  }
-  joystick_LY_middle_av = joystick_LY_middle_av / Calibration_messureCount;
-
-  Serial.print(" LY:" + String(joystick_LY_middle_av));
-
-  int joystick_RX_middle_av = 0;
-  for(int i = Calibration_messureCount; i > 0; i--){
-    joystick_RX_middle_av += analogRead(joystick_RX_Pin);
-    delay(Calibration_messureTime);
-  }
-  joystick_RX_middle_av = joystick_RX_middle_av / Calibration_messureCount;
-
-  Serial.print(" RX:" + String(joystick_RX_middle_av));
-
-  int joystick_RY_middle_av = 0;
-  for(int i = Calibration_messureCount; i > 0; i--){
-    joystick_RY_middle_av += analogRead(joystick_RY_Pin);
-    delay(Calibration_messureTime);
-  }
-  joystick_RY_middle_av = joystick_RY_middle_av / Calibration_messureCount;
-
-  Serial.println(" RY:" + String(joystick_RY_middle_av));
-
-  EEPROM.put(EEPROM_joystick_LX_middle, joystick_LX_middle_av);
-  EEPROM.put(EEPROM_joystick_LY_middle, joystick_LY_middle_av);
-  EEPROM.put(EEPROM_joystick_RX_middle, joystick_RX_middle_av);
-  EEPROM.put(EEPROM_joystick_RY_middle, joystick_RY_middle_av);
-  joystick_LX_middle = joystick_LX_middle_av;
-  joystick_LY_middle = joystick_LY_middle_av;
-  joystick_RX_middle = joystick_RX_middle_av;
-  joystick_RY_middle = joystick_RY_middle_av;
-
-  Serial.println("Saved");
+  calibrateMiddle();
   
   tone(BuzzerPin, Buzzer_ShortTon);
   delay(Buzzer_ShortTone_Time);
@@ -158,14 +149,14 @@ void calibrate(){
 
   Serial.println("Wait for Input...");
 
-  joystick_LX_max = joystick_LX_middle_av;
-  joystick_LY_max = joystick_LY_middle_av;
-  joystick_RX_max = joystick_RX_middle_av;
-  joystick_RY_max = joystick_RY_middle_av;
-  joystick_LX_min = joystick_LX_middle_av;
-  joystick_LY_min = joystick_LY_middle_av;
-  joystick_RX_min = joystick_RX_middle_av;
-  joystick_RY_min = joystick_RY_middle_av;
+  joystick_LX_max = joystick_LX_middle;
+  joystick_LY_max = joystick_LY_middle;
+  joystick_RX_max = joystick_RX_middle;
+  joystick_RY_max = joystick_RY_middle;
+  joystick_LX_min = joystick_LX_middle;
+  joystick_LY_min = joystick_LY_middle;
+  joystick_RX_min = joystick_RX_middle;
+  joystick_RY_min = joystick_RY_middle;
 
   while(digitalRead(joystick_button_Pin) == HIGH){
     int joystick_LX_rout = analogRead(joystick_LX_Pin);
@@ -224,13 +215,13 @@ void setup(){
     }
 
     EEPROM.put(1, EEPROM_Code);
-    calibrate();
+    calibrateMaxMin();
   }
   else{
-    EEPROM.get(EEPROM_joystick_LX_middle, joystick_LX_middle);
-    EEPROM.get(EEPROM_joystick_LY_middle, joystick_LY_middle);
-    EEPROM.get(EEPROM_joystick_RX_middle, joystick_RX_middle);
-    EEPROM.get(EEPROM_joystick_RY_middle, joystick_RY_middle);
+    tone(BuzzerPin, Buzzer_ShortTon);
+    delay(2000);
+    calibrateMiddle();
+    noTone(BuzzerPin);
 
     EEPROM.get(EEPROM_joystick_LX_max, joystick_LX_max);
     EEPROM.get(EEPROM_joystick_LY_max, joystick_LY_max);
@@ -291,7 +282,7 @@ void joystickButtonPress(){
     Serial.println(String(Code[0]) + String(Code[1]) + String(Code[2]) + String(Code[3]) + String(Code[4]) + " Len:" + String(CodeLenght));
     if(Code[0] == 0 && Code[1] == 1 && Code[2] == 0 && Code[3] == 1 && Code[4] == 0  && CodeLenght == 4){
       Serial.println("Calibrate...");
-      calibrate();
+      calibrateMaxMin();
     }
   }
 }
