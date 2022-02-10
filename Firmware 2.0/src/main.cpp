@@ -211,6 +211,10 @@ void joystickButtonPress(){
   }
 }
 
+void Autoplay(){
+
+}
+
 int joystick_position(int joystick, int joystick_middle, int joystick_min, int joystick_max){
   if(joystick <= joystick_middle - joystick_Empfindlichkeit)
     return(-map(joystick, joystick_middle - joystick_Empfindlichkeit, joystick_min, joystick_MinSpeed, joystick_MaxSpeed));
@@ -275,7 +279,10 @@ void loop(){
     Hand.write(HandPos);
   }
 
-  if(offtime >= TimeToDetach){
+  if(offtime >= TimeToAutoplay){
+    Autoplay();
+  }
+  else if(offtime >= TimeToDetach){
     Drehung.detach();
     Arm.detach();
     Oberarm.detach();
