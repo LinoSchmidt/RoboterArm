@@ -63,4 +63,4 @@
 #define EEPROM_joystick_LX_min 180
 #define EEPROM_joystick_LY_min 200
 #define EEPROM_joystick_RX_min 220
-#define EEPROM_joystick_RY_min 240  
+#define EEPROM_joystick_RY_min 240
