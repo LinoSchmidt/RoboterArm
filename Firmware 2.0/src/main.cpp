@@ -212,7 +212,7 @@ void joystickButtonPress(){
 }
 
 void Autoplay(){
-
+  
 }
 
 int joystick_position(int joystick, int joystick_middle, int joystick_min, int joystick_max){
