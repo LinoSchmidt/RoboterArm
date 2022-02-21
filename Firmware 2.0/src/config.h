@@ -13,34 +13,45 @@
 #define OberarmMax 180
 #define OberarmMin 0
 
-#define HandMax 130
-#define HandMin 45
+#define HandMax 180
+#define HandMin 95
+#define HandOffPosition 180
 
 #define InvertDrehung false
-#define InvertArm false
-#define InvertOberarm true
+#define InvertArm true
+#define InvertOberarm false
 #define InvertHand false
 
 #define Drehung_Start 135
 #define Arm_Start 180
 #define Oberarm_Start 111
-#define Hand_Start 130
+#define Hand_Start 180
 
 //Joysticks
 #define joystick_LX_Pin 0
+#define joystick_LX_MaxSpeed 5
+#define joystick_LX_MinSpeed 1
+
 #define joystick_LY_Pin 1
+#define joystick_LY_MaxSpeed 5
+#define joystick_LY_MinSpeed 1
+
 #define joystick_RX_Pin 2
+#define joystick_RX_MaxSpeed 10
+#define joystick_RX_MinSpeed 1
+
 #define joystick_RY_Pin 3
+#define joystick_RY_MaxSpeed 5
+#define joystick_RY_MinSpeed 1
+
 #define joystick_button_Pin 8
 
 #define joystick_Empfindlichkeit 4
-#define joystick_MaxSpeed 5
-#define joystick_MinSpeed 1
 
 //Timing
-#define LoopTime 40
+#define LoopTime 50
 #define TimeToAutoplay 1000
-#define TimeToDetach 80
+#define TimeToDetach 70
 #define Calibration_TimeToMiddle 3000
 #define Calibration_messureTime 5
 #define Calibration_messureCount 10

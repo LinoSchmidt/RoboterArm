@@ -211,11 +211,30 @@ void joystickButtonPress(){
   }
 }
 
+void detachAttach(bool detach){
+  if(detach){
+    Drehung.detach();
+    Arm.detach();
+    Oberarm.detach();
+    Hand.detach();
+
+    detached = true;
+  }
+  else{
+    Drehung.attach(DrehungPin);
+    Arm.attach(ArmPin);
+    Oberarm.attach(OberarmPin);
+    Hand.attach(HandPin);
+
+    detached = false;
+  }
+}
+
 void Autoplay(){
   
 }
 
-int joystick_position(int joystick, int joystick_middle, int joystick_min, int joystick_max){
+int joystick_position(int joystick, int joystick_middle, int joystick_min, int joystick_max, int joystick_MinSpeed, int joystick_MaxSpeed){
   if(joystick <= joystick_middle - joystick_Empfindlichkeit)
     return(-map(joystick, joystick_middle - joystick_Empfindlichkeit, joystick_min, joystick_MinSpeed, joystick_MaxSpeed));
   else if(joystick >= joystick_middle + joystick_Empfindlichkeit)
@@ -225,10 +244,10 @@ int joystick_position(int joystick, int joystick_middle, int joystick_min, int j
 }
 
 void loop(){
-  joystick_LX = joystick_position(analogRead(joystick_LX_Pin), joystick_LX_middle, joystick_LX_min, joystick_LX_max);
-  joystick_LY = joystick_position(analogRead(joystick_LY_Pin), joystick_LY_middle, joystick_LY_min, joystick_LY_max);
-  joystick_RX = joystick_position(analogRead(joystick_RX_Pin), joystick_RX_middle, joystick_RX_min, joystick_RX_max);
-  joystick_RY = joystick_position(analogRead(joystick_RY_Pin), joystick_RY_middle, joystick_RY_min, joystick_RY_max);
+  joystick_LX = joystick_position(analogRead(joystick_LX_Pin), joystick_LX_middle, joystick_LX_min, joystick_LX_max, joystick_LX_MinSpeed, joystick_LX_MaxSpeed);
+  joystick_LY = joystick_position(analogRead(joystick_LY_Pin), joystick_LY_middle, joystick_LY_min, joystick_LY_max, joystick_LY_MinSpeed, joystick_LY_MaxSpeed);
+  joystick_RX = joystick_position(analogRead(joystick_RX_Pin), joystick_RX_middle, joystick_RX_min, joystick_RX_max, joystick_RX_MinSpeed, joystick_RX_MaxSpeed);
+  joystick_RY = joystick_position(analogRead(joystick_RY_Pin), joystick_RY_middle, joystick_RY_min, joystick_RY_max, joystick_RY_MinSpeed, joystick_RY_MaxSpeed);
 
   if(joystick_LX == 0 && joystick_LY == 0 && joystick_RX == 0 && joystick_RY == 0){
     if (TimeToAutoplay > offtime)
@@ -237,12 +256,7 @@ void loop(){
   else{
     offtime = 0;
     if(detached){
-      Drehung.attach(DrehungPin);
-      Arm.attach(ArmPin);
-      Oberarm.attach(OberarmPin);
-      Hand.attach(HandPin);
-
-      detached = false;
+      detachAttach(false);
     }
 
     if(joystick_LX != 0){
@@ -283,22 +297,11 @@ void loop(){
     Autoplay();
   }
   else if(offtime >= TimeToDetach){
-    Drehung.detach();
-    Arm.detach();
-    Oberarm.detach();
-    Hand.detach();
-
-    detached = true;
+    detachAttach(true);
   }
 
   if(digitalRead(joystick_button_Pin) == LOW){
-    Drehung.detach();
-    Arm.detach();
-    Oberarm.detach();
-    Hand.detach();
-
-    detached = true;
-
+    detachAttach(true);
     joystickButtonPress();
   }
 
