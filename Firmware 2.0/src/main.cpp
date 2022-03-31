@@ -15,7 +15,6 @@ int offtime = 0;
 bool detached = true;
 int eeprom = 0;
 
-
 void calibrateMiddle(){
   Serial.print("Get Middle Positions: ");
 

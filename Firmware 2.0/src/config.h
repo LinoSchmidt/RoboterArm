@@ -18,8 +18,8 @@
 #define HandOffPosition 180
 
 #define InvertDrehung false
-#define InvertArm true
-#define InvertOberarm false
+#define InvertArm false
+#define InvertOberarm true
 #define InvertHand false
 
 #define Drehung_Start 135
@@ -37,11 +37,11 @@
 #define joystick_LY_MinSpeed 1
 
 #define joystick_RX_Pin 2
-#define joystick_RX_MaxSpeed 10
+#define joystick_RX_MaxSpeed 5
 #define joystick_RX_MinSpeed 1
 
 #define joystick_RY_Pin 3
-#define joystick_RY_MaxSpeed 5
+#define joystick_RY_MaxSpeed 3
 #define joystick_RY_MinSpeed 1
 
 #define joystick_button_Pin 8
