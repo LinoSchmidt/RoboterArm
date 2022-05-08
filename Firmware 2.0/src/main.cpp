@@ -1,30 +1,27 @@
 #include <Arduino.h>
-#include <Servo.h>
 #include <EEPROM.h>
-#include <ServoEasing.h>
+#include <ServoEasing.hpp>
 #include "config.h"
 
-Servo Drehung, Arm, Oberarm, Hand;
+ServoEasing Drehung, Arm, Oberarm, Hand;
 
 int joystick_LX, joystick_LY, joystick_RX, joystick_RY;
 int joystick_LX_middle, joystick_LY_middle, joystick_RX_middle, joystick_RY_middle;
 int joystick_LX_max, joystick_LY_max, joystick_RX_max, joystick_RY_max;
 int joystick_LX_min, joystick_LY_min, joystick_RX_min, joystick_RY_min;
 int DrehungPos = Drehung_Start, ArmPos = Arm_Start, OberarmPos = Oberarm_Start, HandPos = Hand_Start;
-int oldPos = -1;
-
-int autoAblauf[][4] = {
-  {135,180,111,180},
-  {100,120,90,100},
-  {100,60,50,180},
-  {145,180,140,180},
-  {135,110,131,180}
-};
-int ablauf = 0;
 
 int offtime = 0;
 bool detached = true;
 int eeprom = 0;
+int autoplayLoop = 0;
+
+int autoplayPos[][4] = {
+  {20, 100, 50, 180},
+  {70, 140, 60, 100},
+  {0, 150, 0, 100},
+  {50, 180, 50, 150}
+};
 
 void servoWrite() {
   Drehung.write(DrehungPos);
@@ -32,30 +29,16 @@ void servoWrite() {
   Oberarm.write(OberarmPos);
   Hand.write(HandPos);
 }
-void servoWrite(int DrehungP, int ArmP, int OberarmP, int HandP) {
-  Drehung.write(DrehungP);
-  Arm.write(ArmP);
-  Oberarm.write(OberarmP);
-  Hand.write(HandP);
-}
-
-int goTo(int Pos, int newPos, int time) {
+void servoEase(int DrehungP, int ArmP, int OberarmP, int HandP, float easeTime, uint_fast8_t easeType = EASE_QUADRATIC_IN_OUT) {
+  Drehung.setEasingType(easeType);
+  Arm.setEasingType(easeType);
+  Oberarm.setEasingType(easeType);
+  Hand.setEasingType(easeType);
   
-  float aufloesung = 1 / time * LoopTime;
-  float steigung = 2;
-  
-  if(oldPos == -1) {
-    oldPos = Pos;
-  }
-  
-  float sendPos = (int)((pow(aufloesung, steigung) / pow(aufloesung, steigung) + pow((1 - aufloesung), steigung)) + oldPos) + (newPos - oldPos - 1)*Pos;
-  
-  if(sendPos == newPos) {
-    oldPos = -1;
-    return -1;
-  }
-  
-  return sendPos;
+  Drehung.easeTo(DrehungP, easeTime);
+  Arm.easeTo(ArmP, easeTime);
+  Oberarm.easeTo(OberarmP, easeTime);
+  Hand.easeTo(HandP, easeTime);
 }
 
 void calibrateMiddle(){
@@ -273,33 +256,15 @@ void detachAttach(bool detach){
 }
 
 void Autoplay(){
-  int DrehungPs = goTo(DrehungPos, autoAblauf[ablauf][0], 3000);
-  int ArmPs = goTo(ArmPos, autoAblauf[ablauf][1], 3000);
-  int OberarmPs = goTo(OberarmPos, autoAblauf[ablauf][2], 3000);
-  int HandPs = goTo(HandPos, autoAblauf[ablauf][3], 3000);
+  if(autoplayLoop == sizeof(autoplayPos)) autoplayLoop = 0;
   
-  if(DrehungPs != -1) {
-    DrehungPos = DrehungPs;
-  }
-  if(ArmPs != -1) {
-    ArmPos = ArmPs;
-  }
-  if(OberarmPs != -1) {
-    OberarmPos = OberarmPs;
-  }
-  if(HandPs != -1) {
-    HandPos = HandPs;
-  }
+  servoEase(autoplayPos[autoplayLoop][0], autoplayPos[autoplayLoop][1], autoplayPos[autoplayLoop][2], autoplayPos[autoplayLoop][3], 50);
+  DrehungPos = Drehung.getCurrentAngle();
+  ArmPos = Arm.getCurrentAngle();
+  OberarmPos = Oberarm.getCurrentAngle();
+  HandPos = Hand.getCurrentAngle();
   
-  if(DrehungPs == -1 && ArmPs == -1 && OberarmPs == -1 && HandPs == -1) {
-    if(ablauf < sizeof(autoAblauf)) {
-      ablauf++;
-    } else {
-      ablauf = 0;
-    }
-  }
-  
-  servoWrite();
+  autoplayLoop++;
 }
 
 int joystick_position(int joystick, int joystick_middle, int joystick_min, int joystick_max, int joystick_MinSpeed, int joystick_MaxSpeed){
