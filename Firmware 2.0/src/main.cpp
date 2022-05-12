@@ -35,10 +35,10 @@ void servoEase(int DrehungP, int ArmP, int OberarmP, int HandP, float easeTime, 
   Oberarm.setEasingType(easeType);
   Hand.setEasingType(easeType);
   
-  Drehung.easeTo(DrehungP, easeTime);
-  Arm.easeTo(ArmP, easeTime);
-  Oberarm.easeTo(OberarmP, easeTime);
-  Hand.easeTo(HandP, easeTime);
+  Drehung.startEaseTo(DrehungP, easeTime);
+  Arm.startEaseTo(ArmP, easeTime);
+  Oberarm.startEaseTo(OberarmP, easeTime);
+  Hand.startEaseTo(HandP, easeTime);
 }
 
 void calibrateMiddle(){
@@ -258,13 +258,15 @@ void detachAttach(bool detach){
 void Autoplay(){
   if(autoplayLoop == sizeof(autoplayPos)) autoplayLoop = 0;
   
-  servoEase(autoplayPos[autoplayLoop][0], autoplayPos[autoplayLoop][1], autoplayPos[autoplayLoop][2], autoplayPos[autoplayLoop][3], 50);
+  if(DrehungPos == autoplayPos[autoplayLoop][0] && ArmPos == autoplayPos[autoplayLoop][1] && OberarmPos == autoplayPos[autoplayLoop][2] && HandPos == autoplayPos[autoplayLoop][3]) {
+    servoEase(autoplayPos[autoplayLoop][0], autoplayPos[autoplayLoop][1], autoplayPos[autoplayLoop][2], autoplayPos[autoplayLoop][3], 50);
+    autoplayLoop++;
+  }
+  
   DrehungPos = Drehung.getCurrentAngle();
   ArmPos = Arm.getCurrentAngle();
   OberarmPos = Oberarm.getCurrentAngle();
   HandPos = Hand.getCurrentAngle();
-  
-  autoplayLoop++;
 }
 
 int joystick_position(int joystick, int joystick_middle, int joystick_min, int joystick_max, int joystick_MinSpeed, int joystick_MaxSpeed){
