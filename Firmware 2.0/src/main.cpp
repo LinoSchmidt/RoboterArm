@@ -283,6 +283,7 @@ void loop(){
   joystick_RY = joystick_position(analogRead(joystick_RY_Pin), joystick_RY_middle, joystick_RY_min, joystick_RY_max, joystick_RY_MinSpeed, joystick_RY_MaxSpeed);
 
   if(joystick_LX == 0 && joystick_LY == 0 && joystick_RX == 0 && joystick_RY == 0){
+    noTone(BuzzerPin);
     if (TimeToAutoplay > offtime)
       offtime++;
   }
@@ -310,15 +311,35 @@ void loop(){
     }
     
     
-    if(HandPos > HandMax)HandPos = HandMax;
-    if(OberarmPos > OberarmMax)OberarmPos = OberarmMax;
-    if(DrehungPos > DrehungMax)DrehungPos = DrehungMax;
-    if(ArmPos > ArmMax)ArmPos = ArmMax;
-
-    if(HandPos < HandMin)HandPos = HandMin;
-    if(OberarmPos < OberarmMin)OberarmPos = OberarmMin;
-    if(DrehungPos < DrehungMin)DrehungPos = DrehungMin;
-    if(ArmPos < ArmMin)ArmPos = ArmMin;
+    if(HandPos > HandMax) {
+      HandPos = HandMax;
+      tone(BuzzerPin, Buzzer_ShortTon);
+    } else if(OberarmPos > OberarmMax) {
+      OberarmPos = OberarmMax;
+      tone(BuzzerPin, Buzzer_ShortTon);
+    } else if(DrehungPos > DrehungMax) {
+      DrehungPos = DrehungMax;
+      tone(BuzzerPin, Buzzer_ShortTon);
+    } else if(ArmPos > ArmMax) {
+      ArmPos = ArmMax;
+      tone(BuzzerPin, Buzzer_ShortTon);
+    }
+    else if(HandPos < HandMin) {
+      HandPos = HandMin;
+      tone(BuzzerPin, Buzzer_ShortTon);
+    } else if(OberarmPos < OberarmMin) {
+      OberarmPos = OberarmMin;
+      tone(BuzzerPin, Buzzer_ShortTon);
+    } else if(DrehungPos < DrehungMin) {
+      DrehungPos = DrehungMin;
+      tone(BuzzerPin, Buzzer_ShortTon);
+    } else if(ArmPos < ArmMin) {
+      ArmPos = ArmMin;
+      tone(BuzzerPin, Buzzer_ShortTon);
+    } else {
+      noTone(BuzzerPin);
+    }
+    
 
     servoWrite();
   }
