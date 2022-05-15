@@ -15,6 +15,7 @@ int offtime = 0;
 bool detached = true;
 int eeprom = 0;
 int autoplayLoop = 0;
+bool autoplayStart = true;
 
 int autoplayPos[][4] = {
   {20, 100, 50, 180},
@@ -23,13 +24,35 @@ int autoplayPos[][4] = {
   {50, 180, 50, 150}
 };
 
+void detachAttach(bool detach){
+  if(detach){
+    Drehung.detach();
+    Arm.detach();
+    Oberarm.detach();
+    Hand.detach();
+
+    detached = true;
+  }
+  else{
+    Drehung.attach(DrehungPin, DrehungPos);
+    Arm.attach(ArmPin, ArmPos);
+    Oberarm.attach(OberarmPin, OberarmPos);
+    Hand.attach(HandPin, HandPos);
+
+    detached = false;
+  }
+}
+
 void servoWrite() {
+  if(detached) detachAttach(false);
   Drehung.write(DrehungPos);
   Arm.write(ArmPos);
   Oberarm.write(OberarmPos);
   Hand.write(HandPos);
 }
 void servoEase(int DrehungP, int ArmP, int OberarmP, int HandP, float easeTime, uint_fast8_t easeType = EASE_QUADRATIC_IN_OUT) {
+  if(detached) detachAttach(false);
+  
   Drehung.setEasingType(easeType);
   Arm.setEasingType(easeType);
   Oberarm.setEasingType(easeType);
@@ -236,31 +259,21 @@ void joystickButtonPress(){
   }
 }
 
-void detachAttach(bool detach){
-  if(detach){
-    Drehung.detach();
-    Arm.detach();
-    Oberarm.detach();
-    Hand.detach();
-
-    detached = true;
-  }
-  else{
-    Drehung.attach(DrehungPin);
-    Arm.attach(ArmPin);
-    Oberarm.attach(OberarmPin);
-    Hand.attach(HandPin);
-
-    detached = false;
-  }
-}
-
 void Autoplay(){
-  if(autoplayLoop == sizeof(autoplayPos)) autoplayLoop = 0;
+  if(autoplayLoop+1 >= sizeof(autoplayPos)/sizeof(autoplayPos[0])) autoplayLoop = 0;
+  
+  if(autoplayStart) {
+    autoplayStart = false;
+    servoEase(autoplayPos[autoplayLoop][0], autoplayPos[autoplayLoop][1], autoplayPos[autoplayLoop][2], autoplayPos[autoplayLoop][3], AutoplayEaseSpeed);
+  }
   
   if(DrehungPos == autoplayPos[autoplayLoop][0] && ArmPos == autoplayPos[autoplayLoop][1] && OberarmPos == autoplayPos[autoplayLoop][2] && HandPos == autoplayPos[autoplayLoop][3]) {
-    servoEase(autoplayPos[autoplayLoop][0], autoplayPos[autoplayLoop][1], autoplayPos[autoplayLoop][2], autoplayPos[autoplayLoop][3], 50);
-    autoplayLoop++;
+    if(autoplayLoop+1 >= sizeof(autoplayPos)/sizeof(autoplayPos[0])) {
+      autoplayLoop = 0;
+    } else {
+      autoplayLoop++;
+    }
+    servoEase(autoplayPos[autoplayLoop][0], autoplayPos[autoplayLoop][1], autoplayPos[autoplayLoop][2], autoplayPos[autoplayLoop][3], AutoplayEaseSpeed);
   }
   
   DrehungPos = Drehung.getCurrentAngle();
@@ -291,9 +304,7 @@ void loop(){
   }
   else{
     offtime = 0;
-    if(detached){
-      detachAttach(false);
-    }
+    autoplayStart = true;
 
     if(joystick_LX != 0){
       if(InvertHand)HandPos -= joystick_LX;
@@ -342,12 +353,10 @@ void loop(){
       noTone(BuzzerPin);
     }
     
-
     servoWrite();
   }
 
   if(offtime >= TimeToAutoplay){
-    detachAttach(false);
     Autoplay();
   }
   else if(offtime >= TimeToDetach){

@@ -51,6 +51,7 @@
 //Timing
 #define LoopTime 50
 #define TimeToAutoplay 1000
+#define AutoplayEaseSpeed 50
 #define TimeToDetach 70
 #define Calibration_TimeToMiddle 3000
 #define Calibration_messureTime 5
