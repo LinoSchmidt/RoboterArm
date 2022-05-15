@@ -261,7 +261,10 @@ void joystickButtonPress(){
 }
 
 void Autoplay(){
-  if(autoplayLoop+1 >= sizeof(autoplayPos)/sizeof(autoplayPos[0])) autoplayLoop = 0;
+  if(autoplayLoop+1 >= sizeof(autoplayPos)/sizeof(autoplayPos[0])) {
+    autoplayLoop = 0;
+    calibrateMiddle();
+  }
   
   if(autoplayStart) {
     autoplayStart = false;
@@ -308,8 +311,14 @@ void loop(){
 
   if(joystick_LX == 0 && joystick_LY == 0 && joystick_RX == 0 && joystick_RY == 0){
     noTone(BuzzerPin);
-    if (TimeToAutoplay > offtime)
-      offtime++;
+    
+    if (TimeToAutoplay > offtime) offtime++;
+    
+    if(offtime >= TimeToAutoplay) {
+      Autoplay();
+    } else if(offtime == TimeToDetach){
+      detachAttach(true);
+    }
   }
   else{
     offtime = 0;
@@ -363,13 +372,6 @@ void loop(){
     }
     
     servoWrite();
-  }
-
-  if(offtime >= TimeToAutoplay){
-    Autoplay();
-  }
-  else if(offtime >= TimeToDetach){
-    detachAttach(true);
   }
 
   if(digitalRead(joystick_button_Pin) == LOW){
