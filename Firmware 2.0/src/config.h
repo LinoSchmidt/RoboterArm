@@ -58,6 +58,7 @@
 #define Calibration_messureCount 10
 #define Button_LongPressTime 1000
 #define Button_ShortPressTime 300
+#define buzzSpeed 1
 
 //Buzzer
 #define BuzzerPin 7

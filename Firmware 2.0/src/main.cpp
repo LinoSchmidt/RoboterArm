@@ -16,6 +16,7 @@ bool detached = true;
 int eeprom = 0;
 int autoplayLoop = 0;
 bool autoplayStart = true;
+int buzzTime = 0;
 
 int autoplayPos[][4] = {
   {20, 100, 50, 180},
@@ -291,6 +292,14 @@ int joystick_position(int joystick, int joystick_middle, int joystick_min, int j
     return(0);
 }
 
+void buzz(){
+  if(buzzTime <= buzzSpeed) tone(BuzzerPin, Buzzer_ShortTon);
+  else if(buzzTime <= buzzSpeed*2) noTone(BuzzerPin);
+  else buzzTime = 0;
+  
+  buzzTime++;
+}
+
 void loop(){
   joystick_LX = joystick_position(analogRead(joystick_LX_Pin), joystick_LX_middle, joystick_LX_min, joystick_LX_max, joystick_LX_MinSpeed, joystick_LX_MaxSpeed);
   joystick_LY = joystick_position(analogRead(joystick_LY_Pin), joystick_LY_middle, joystick_LY_min, joystick_LY_max, joystick_LY_MinSpeed, joystick_LY_MaxSpeed);
@@ -326,29 +335,29 @@ void loop(){
     
     if(HandPos > HandMax) {
       HandPos = HandMax;
-      tone(BuzzerPin, Buzzer_ShortTon);
+      buzz();
     } else if(OberarmPos > OberarmMax) {
       OberarmPos = OberarmMax;
-      tone(BuzzerPin, Buzzer_ShortTon);
+      buzz();
     } else if(DrehungPos > DrehungMax) {
       DrehungPos = DrehungMax;
-      tone(BuzzerPin, Buzzer_ShortTon);
+      buzz();
     } else if(ArmPos > ArmMax) {
       ArmPos = ArmMax;
-      tone(BuzzerPin, Buzzer_ShortTon);
+      buzz();
     }
     else if(HandPos < HandMin) {
       HandPos = HandMin;
-      tone(BuzzerPin, Buzzer_ShortTon);
+      buzz();
     } else if(OberarmPos < OberarmMin) {
       OberarmPos = OberarmMin;
-      tone(BuzzerPin, Buzzer_ShortTon);
+      buzz();
     } else if(DrehungPos < DrehungMin) {
       DrehungPos = DrehungMin;
-      tone(BuzzerPin, Buzzer_ShortTon);
+      buzz();
     } else if(ArmPos < ArmMin) {
       ArmPos = ArmMin;
-      tone(BuzzerPin, Buzzer_ShortTon);
+      buzz();
     } else {
       noTone(BuzzerPin);
     }
