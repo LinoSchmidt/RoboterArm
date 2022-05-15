@@ -261,11 +261,6 @@ void joystickButtonPress(){
 }
 
 void Autoplay(){
-  if(autoplayLoop+1 >= sizeof(autoplayPos)/sizeof(autoplayPos[0])) {
-    autoplayLoop = 0;
-    calibrateMiddle();
-  }
-  
   if(autoplayStart) {
     autoplayStart = false;
     servoEase(autoplayPos[autoplayLoop][0], autoplayPos[autoplayLoop][1], autoplayPos[autoplayLoop][2], autoplayPos[autoplayLoop][3], AutoplayEaseSpeed);
@@ -274,6 +269,7 @@ void Autoplay(){
   if(DrehungPos == autoplayPos[autoplayLoop][0] && ArmPos == autoplayPos[autoplayLoop][1] && OberarmPos == autoplayPos[autoplayLoop][2] && HandPos == autoplayPos[autoplayLoop][3]) {
     if(autoplayLoop+1 >= sizeof(autoplayPos)/sizeof(autoplayPos[0])) {
       autoplayLoop = 0;
+      calibrateMiddle();
     } else {
       autoplayLoop++;
     }
