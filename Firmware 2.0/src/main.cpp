@@ -16,17 +16,15 @@ bool detached = true;
 int eeprom = 0;
 int autoplayLoop = 0;
 bool autoplayStart = true;
+bool inAutoplay = false;
 int buzzTime = 0;
+bool cal = true;
 
-int autoplayPos[][4] = {
-  {20, 100, 50, 180},
-  {70, 140, 60, 100},
-  {0, 150, 0, 100},
-  {50, 180, 50, 150}
-};
+int autoplayPos[][4] = {{0,0,0,0}};
+bool autoplayNull = true;
 
-void detachAttach(bool detach){
-  if(detach){
+void attached(bool attach){
+  if(!attach){
     Drehung.detach();
     Arm.detach();
     Oberarm.detach();
@@ -45,14 +43,14 @@ void detachAttach(bool detach){
 }
 
 void servoWrite() {
-  if(detached) detachAttach(false);
+  if(detached) attached(true);
   Drehung.write(DrehungPos);
   Arm.write(ArmPos);
   Oberarm.write(OberarmPos);
   Hand.write(HandPos);
 }
 void servoEase(int DrehungP, int ArmP, int OberarmP, int HandP, float easeTime, uint_fast8_t easeType = EASE_QUADRATIC_IN_OUT) {
-  if(detached) detachAttach(false);
+  if(detached) attached(true);
   
   Drehung.setEasingType(easeType);
   Arm.setEasingType(easeType);
@@ -207,7 +205,28 @@ void setup(){
   }
 }
 
-void joystickButtonPress(){
+void savePos() {
+  if(autoplayNull) {
+    autoplayPos[0][0] = DrehungPos;
+    autoplayPos[0][1] = ArmPos;
+    autoplayPos[0][2] = OberarmPos;
+    autoplayPos[0][3] = HandPos;
+    autoplayNull = false;
+  } else {
+    Serial.println(sizeof(autoplayPos)/sizeof(int));
+    autoplayPos[sizeof(autoplayPos)/sizeof(int)][0] = DrehungPos;
+    autoplayPos[sizeof(autoplayPos)/sizeof(int)][1] = ArmPos;
+    autoplayPos[sizeof(autoplayPos)/sizeof(int)][2] = OberarmPos;
+    autoplayPos[sizeof(autoplayPos)/sizeof(int)][3] = HandPos;
+  }
+}
+
+void clearPos() {
+  memset(autoplayPos, 0, sizeof(autoplayPos));
+  autoplayNull = true;
+}
+
+void joystickButtonPress() {
   int Code[30] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; //0 = short, 1 = long
   int CodeLenght = 0;
   bool Finished = false;
@@ -251,11 +270,22 @@ void joystickButtonPress(){
     }
   }
 
-  if(!abort){
+  if(!abort) {
     Serial.println(String(Code[0]) + String(Code[1]) + String(Code[2]) + String(Code[3]) + String(Code[4]) + " Len:" + String(CodeLenght));
-    if(Code[0] == 0 && Code[1] == 1 && Code[2] == 0 && Code[3] == 1 && Code[4] == 0  && CodeLenght == 4){
+    if(Code[0] == 0 && Code[1] == 1 && Code[2] == 0 && Code[3] == 1 && CodeLenght == 4) {
       Serial.println("Calibrate...");
       calibrateMaxMin();
+    } else if(Code[0] == 0 && CodeLenght  == 1) {
+      Serial.println("Save position...");
+      savePos();
+    } else if(Code[0] == 1 && CodeLenght == 1) {
+      Serial.println("Start Autoplay...");
+      autoplayStart = true;
+      autoplayLoop = 0;
+      inAutoplay = true;
+    } else if(Code[0] == 0 && Code[1] == 0 && CodeLenght == 2) {
+      Serial.println("Clear positions...");
+      clearPos();
     }
   }
 }
@@ -267,9 +297,8 @@ void Autoplay(){
   }
   
   if(DrehungPos == autoplayPos[autoplayLoop][0] && ArmPos == autoplayPos[autoplayLoop][1] && OberarmPos == autoplayPos[autoplayLoop][2] && HandPos == autoplayPos[autoplayLoop][3]) {
-    if(autoplayLoop+1 >= sizeof(autoplayPos)/sizeof(autoplayPos[0])) {
+    if((unsigned long long)(autoplayLoop+1) >= sizeof(autoplayPos)/sizeof(int)) {
       autoplayLoop = 0;
-      calibrateMiddle();
     } else {
       autoplayLoop++;
     }
@@ -308,17 +337,23 @@ void loop(){
   if(joystick_LX == 0 && joystick_LY == 0 && joystick_RX == 0 && joystick_RY == 0){
     noTone(BuzzerPin);
     
-    if (TimeToAutoplay > offtime) offtime++;
-    
-    if(offtime >= TimeToAutoplay) {
+    if(inAutoplay == true) {
       Autoplay();
-    } else if(offtime == TimeToDetach){
-      detachAttach(true);
+    } else {
+      if (TimeToCal > offtime) offtime++;
+    
+      if(offtime >= TimeToCal && cal == true) {
+        calibrateMiddle();
+        cal = false;
+      } else if(offtime == TimeToDetach){
+        attached(false);
+      }
     }
   }
   else{
     offtime = 0;
-    autoplayStart = true;
+    inAutoplay = false;
+    cal = true;
 
     if(joystick_LX != 0){
       if(InvertHand)HandPos -= joystick_LX;
@@ -371,7 +406,7 @@ void loop(){
   }
 
   if(digitalRead(joystick_button_Pin) == LOW){
-    detachAttach(true);
+    inAutoplay = false;
     joystickButtonPress();
   }
 
