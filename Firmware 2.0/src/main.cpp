@@ -18,7 +18,7 @@ int autoplayLoop = 0;
 bool autoplayStart = true;
 bool inAutoplay = false;
 int buzzTime = 0;
-bool cal = true;
+bool wait = false;
 
 int autoplayPosDrehung[] = {};
 int autoplayPosArm[] = {};
@@ -269,16 +269,16 @@ void joystickButtonPress() {
     if(Code[0] == 0 && Code[1] == 1 && Code[2] == 0 && Code[3] == 1 && CodeLenght == 4) {
       Serial.println("Calibrate...");
       calibrateMaxMin();
-    } else if(Code[0] == 0 && CodeLenght  == 1) {
+    } else if(Code[0] == 0 && CodeLenght  == 1 && AutoplayOn == true) {
       Serial.println("Save position...");
       savePos();
-    } else if(Code[0] == 1 && CodeLenght == 1) {
+    } else if(Code[0] == 1 && CodeLenght == 1 && AutoplayOn == true) {
       Serial.println("Start Autoplay...");
       autoplayStart = true;
       autoplayLoop = 0;
       inAutoplay = true;
       attached(true);
-    } else if(Code[0] == 0 && Code[1] == 0 && CodeLenght == 2) {
+    } else if(Code[0] == 0 && Code[1] == 0 && CodeLenght == 2 && AutoplayOn == true) {
       Serial.println("Clear positions...");
       clearPos();
     }
@@ -346,20 +346,18 @@ void loop(){
     if(inAutoplay == true) {
       Autoplay();
     } else {
-      if (TimeToCal > offtime) offtime++;
-    
-      if(offtime >= TimeToCal && cal == true) {
-        calibrateMiddle();
-        cal = false;
-      } else if(offtime == TimeToDetach){
+      if (TimeToDetach > offtime) offtime++;
+      else if(wait == false) {
         attached(false);
+        calibrateMiddle();
+        wait = true;
       }
     }
   }
   else{
     offtime = 0;
     autoplayStop();
-    cal = true;
+    wait = false;
 
     if(joystick_LX != 0){
       if(InvertHand)HandPos -= joystick_LX;
@@ -415,7 +413,7 @@ void loop(){
     joystickButtonPress();
   }
 
-  Serial.println(String(offtime) + "," + String(DrehungPos) + "," + String(ArmPos) + "," + String(OberarmPos) + "," + String(HandPos));
+  Serial.println(String(offtime) + "," + String(DrehungPos) + "," + String(ArmPos) + "," + String(OberarmPos) + "," + String(HandPos) + ":" + String(joystick_RX) + "," + String(joystick_RY) + "," + String(joystick_LY) + "," + String(joystick_LX));
 
   delay(LoopTime);
 }

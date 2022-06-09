@@ -1,3 +1,5 @@
+#define AutoplayOn true
+
 //Servos
 #define DrehungPin 9
 #define ArmPin 10
@@ -46,11 +48,10 @@
 
 #define joystick_button_Pin 8
 
-#define joystick_Empfindlichkeit 4
+#define joystick_Empfindlichkeit 10
 
 //Timing
 #define LoopTime 50
-#define TimeToCal 500
 #define AutoplayEaseSpeed 50
 #define TimeToDetach 70
 #define Calibration_TimeToMiddle 3000
