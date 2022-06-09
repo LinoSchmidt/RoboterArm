@@ -1,4 +1,4 @@
-#define AutoplayOn true                 // Noch nicht funktionierend
+#define AutoplayOn false                 // Noch nicht funktionierend
 
 //---Servos---
 // Pins an denen die Servos angeschlossen sind
