@@ -66,10 +66,10 @@
 #define Calibration_TimeToMiddle 3000
 #define Calibration_messureTime 5
 #define Calibration_messureCount 10
-// Langer druck Zeit
-#define Button_LongPressTime 1000
 // Kurzer druck Zeit
 #define Button_ShortPressTime 300
+// Code fertig Zeit
+#define Button_FinishedTime 1000
 // Beep Geschwindigkeit
 #define buzzSpeed 1
 

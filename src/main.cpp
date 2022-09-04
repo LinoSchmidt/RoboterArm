@@ -224,36 +224,30 @@ void joystickButtonPress() {
   int Code[] = {}; //0 = short, 1 = long
   int CodeLenght = 0;
   bool Finished = false;
-  bool abort = false;
 
-  while(!Finished && !abort){
+  while(!Finished){
     int buttonTime = 0;
-    while(digitalRead(joystick_button_Pin) == LOW){
-      buttonTime+= 10;
-      delay(10);
+    while(digitalRead(joystick_button_Pin) == LOW) {
+      buttonTime+= 1;
+      delay(1);
     }
 
-    if(buttonTime < Button_ShortPressTime){
+    if(buttonTime < Button_ShortPressTime) {
       Code[CodeLenght] = 0;
       Serial.println("short press");
-    }
-    else if(buttonTime < Button_LongPressTime){
+    } else {
       Code[CodeLenght] = 1;
       Serial.println("long press");
-    }
-    else{
-      abort = true;
-      Serial.println("Code aborted!");
     }
     
     CodeLenght++;
 
     buttonTime = 0;
-    while(digitalRead(joystick_button_Pin) == HIGH && !Finished && !abort){
-      buttonTime+= 10;
-      delay(10);
+    while(digitalRead(joystick_button_Pin) == HIGH && !Finished){
+      buttonTime+= 1;
+      delay(1);
 
-      if(buttonTime >= Button_LongPressTime){
+      if(buttonTime >= Button_FinishedTime){
         Finished = true;
         Serial.println("Code fineshed!");
       }
