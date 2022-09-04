@@ -254,28 +254,26 @@ void joystickButtonPress() {
     }
   }
 
-  if(!abort) {
-    for(int i = 0; i < CodeLenght; i++) {
-      Serial.print(String(Code[i]));
-    }
-    Serial.println(" Len:" + String(CodeLenght));
-    
-    if(Code[0] == 0 && Code[1] == 1 && Code[2] == 0 && Code[3] == 1 && CodeLenght == 4) {
-      Serial.println("Calibrate...");
-      calibrateMaxMin();
-    } else if(Code[0] == 0 && CodeLenght  == 1 && AutoplayOn == true) {
-      Serial.println("Save position...");
-      savePos();
-    } else if(Code[0] == 1 && CodeLenght == 1 && AutoplayOn == true) {
-      Serial.println("Start Autoplay...");
-      autoplayStart = true;
-      autoplayLoop = 0;
-      inAutoplay = true;
-      attached(true);
-    } else if(Code[0] == 0 && Code[1] == 0 && CodeLenght == 2 && AutoplayOn == true) {
-      Serial.println("Clear positions...");
-      clearPos();
-    }
+  for(int i = 0; i < CodeLenght; i++) {
+    Serial.print(String(Code[i]));
+  }
+  Serial.println(" Len:" + String(CodeLenght));
+  
+  if(Code[0] == 0 && Code[1] == 1 && Code[2] == 0 && Code[3] == 1 && CodeLenght == 4) {
+    Serial.println("Calibrate...");
+    calibrateMaxMin();
+  } else if(Code[0] == 0 && CodeLenght  == 1 && AutoplayOn == true) {
+    Serial.println("Save position...");
+    savePos();
+  } else if(Code[0] == 1 && CodeLenght == 1 && AutoplayOn == true) {
+    Serial.println("Start Autoplay...");
+    autoplayStart = true;
+    autoplayLoop = 0;
+    inAutoplay = true;
+    attached(true);
+  } else if(Code[0] == 0 && Code[1] == 0 && CodeLenght == 2 && AutoplayOn == true) {
+    Serial.println("Clear positions...");
+    clearPos();
   }
 }
 
